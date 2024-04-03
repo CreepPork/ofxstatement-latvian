@@ -61,7 +61,7 @@ class CitadeleLVStatementParser(StatementParser):
             results = re.search(CARD_PAYMENT_DATE_REGEX, note).groups()
 
             # Format from d-m-Y to Y-m-d
-            date = f'{results.group(3)}-{results.group(2)}-{results.group(1)}'
+            date = f'{results[2]}-{results[1]}-{results[0]}'
         else:
             date = line.find('ns:BookDate', namespaces=namespaces).text
 
