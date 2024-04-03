@@ -49,11 +49,21 @@ class CitadeleLVStatementParser(StatementParser):
 
         # Get all fields
         type_code = line.find('ns:TypeCode', namespaces=namespaces).text
-        date = line.find('ns:BookDate', namespaces=namespaces).text
         c_or_d = line.find('ns:CorD', namespaces=namespaces).text
         amount = line.find('ns:AccAmt', namespaces=namespaces).text
         id = line.find('ns:BankRef', namespaces=namespaces).text
         note = line.find('ns:PmtInfo', namespaces=namespaces).text
+
+        CARD_PAYMENT_DATE_REGEX = r'(\d{2})\/(\d{2})\/(\d{4})\s'
+
+        # If is paid by card, then book using the card payment date not booking date
+        if re.match(CARD_PAYMENT_DATE_REGEX, note):
+            results = re.search(CARD_PAYMENT_DATE_REGEX, note).groups()
+
+            # Format from d-m-Y to Y-m-d
+            date = f'{results.group(3)}-{results.group(2)}-{results.group(1)}'
+        else:
+            date = line.find('ns:BookDate', namespaces=namespaces).text
 
         # Payee name
         payee_name = None
